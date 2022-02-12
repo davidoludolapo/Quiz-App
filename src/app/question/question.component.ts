@@ -14,11 +14,12 @@ export class QuestionComponent implements OnInit {
   public questionList : any = [];
   public currentQuestion:number = 0;
   public points: number = 0;
-  counter = 60;
+  counter = 10;
   correctAnswer:number = 0
   incorrectAnswer: number = 0
   interval$:any
   progress:string = "0"
+  isQuizCompleted: boolean = false
 
 
 
@@ -46,21 +47,30 @@ export class QuestionComponent implements OnInit {
   }
 
   answer(currentQno:number,option:any) {
+    if (currentQno === this.questionList.length) {
+      this.isQuizCompleted = true;
+      this.stopCounter();
+    }
     if (option.correct) {
       this.points+=10
       this.correctAnswer++
+      setTimeout(() => {
+        this.currentQuestion++
+        this.resetCounter()
+        this.getProgressPercent()
+  
+      }, 1000);
       // this.points = this.points + 10  They do the same thing
-      this.currentQuestion++
-      // this.resetCounter()
-      this.getProgressPercent()
-
+     
 
     } else {
-      this.currentQuestion++
-      this.incorrectAnswer++
-      // this.resetCounter()
-      this.getProgressPercent()
-      this.points -= 10
+      setTimeout(() => {
+        this.currentQuestion++
+        this.incorrectAnswer++
+        this.resetCounter()
+        this.getProgressPercent()
+        this.points -= 10
+      }, 1000);
     }
   }
 
@@ -69,14 +79,14 @@ export class QuestionComponent implements OnInit {
       this.counter--
       if (this.counter===0) {
         this.currentQuestion++
-        this.counter=60
+        this.counter=10
         this.points-10
-      }
+      } 
 
     });
     setTimeout(()=>{
       this.interval$.unsubscribe();
-    }, 600000)
+    }, 100000)
   }
   stopCounter(){
     this.interval$.unsubscribe()
@@ -84,7 +94,7 @@ export class QuestionComponent implements OnInit {
   }
   resetCounter(){
     this.stopCounter()
-    this.counter=60
+    this.counter=10
     this.startCounter()
   }
 
@@ -92,7 +102,7 @@ export class QuestionComponent implements OnInit {
     this.resetCounter()
     this.getAllQuestions()
     this.points = 0
-    this.counter = 60
+    this.counter = 10
     this.currentQuestion =0
     this.progress = "0"
   }
